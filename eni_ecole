@@ -1,0 +1,445 @@
+package fr.eni.leni;
+
+// Importations des classes nécessaires
+import java.util.Scanner;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Random;
+
+/**
+ * La classe Leni est un programme interactif permettant de réviser les mathématiques.
+ * C'est un exercice proposé par L'ENI école pour apprendre le Java.
+ * Il propose des jeux de calcul mental, des tables d'addition, soustraction, multiplication et division.
+ * Le programme s'exécute en ligne de commande.
+ */
+public class Leni {
+
+    // Scanner pour la saisie utilisateur
+    private static Scanner userInput = new Scanner(System.in);
+    
+    // Générateur de nombres aléatoires
+    private static Random random = new Random();
+    
+    // Message d'erreur par défaut
+    private static final String errorMessage = "Je n'ai pas compris.";
+    
+    // Liste des choix d'opérateurs
+    private static final List<Integer> listeChoixOperateurs = new ArrayList<>(Arrays.asList(1, 2, 3, 4));
+    
+    // Liste des choix booléens
+    private static final List<Integer> listeChoix2 = new ArrayList<>(Arrays.asList(1, 2));
+    
+    /**
+     * Vérifie si un nombre est différent de zéro.
+     * Si le nombre est zéro, génère un nouveau nombre aléatoire entre 1 et 10.
+     * @param number Le nombre à vérifier
+     * @return Le nombre initial s'il est différent de zéro, sinon un nouveau nombre aléatoire
+     */
+    public static int verifierDivZero(int number) {
+        int newNumber = number;
+        while (newNumber == 0) {
+            newNumber = random.nextInt(11);
+            System.out.println("Zéro évité !"); // DEBUG
+        }
+        return newNumber;
+    }
+    
+    /**
+     * Valide et récupère un entier saisi par l'utilisateur.
+     * Affiche le message spécifié et continue à demander une saisie tant que l'entrée n'est pas un entier valide.
+     * @param message Le message à afficher pour demander la saisie
+     * @return L'entier saisi par l'utilisateur
+     */
+    public static int validerInt(String message) {
+        boolean reponseValide = false;
+        int integerChoix = 1;
+        do {
+            System.out.printf(message);
+            if (userInput.hasNextInt()) {
+                integerChoix = userInput.nextInt();
+                reponseValide = true;
+            } else {
+                System.err.println(errorMessage);
+                userInput.next(); // Ignorer l'entrée non valide
+            }
+        } while (!reponseValide);
+        return integerChoix;
+    }
+    
+    
+    /**
+     * Valide et récupère un choix parmi une liste donnée.
+     * Affiche le message spécifié et continue à demander une saisie tant que l'entrée n'est pas un choix valide.
+     * @param message Le message à afficher pour demander la saisie
+     * @param listChoix La liste des choix valides
+     * @return Le choix valide saisi par l'utilisateur
+     */
+    public static int validerChoix(String message, List<Integer> listChoix) {
+        boolean reponseValide = false;
+        int integerChoix = 1;
+        do {
+            System.out.printf(message);
+            if (userInput.hasNextInt()) {
+                integerChoix = userInput.nextInt();
+                reponseValide = listChoix.contains(integerChoix);
+                if (!reponseValide) {
+                    System.err.println(errorMessage);
+                }
+            } else {
+                System.err.println(errorMessage);
+                userInput.next(); // Ignorer l'entrée non valide
+            }
+        } while (!reponseValide);
+        return integerChoix;
+    }
+    
+    /**
+     * Valide et récupère un choix booléen (1 ou 2) parmi une liste donnée.
+     * Affiche le message spécifié et continue à demander une saisie tant que l'entrée n'est pas un choix valide.
+     * @param message Le message à afficher pour demander la saisie
+     * @param listChoix La liste des choix valides
+     * @return Le choix booléen valide saisi par l'utilisateur (false pour 1, true pour 2)
+     */
+    public static boolean validerBoolChoix(String message, List<Integer> listChoix) {
+        boolean reponseValide = false;
+        int integerChoix = 1;
+        boolean boolChoix = false;
+        do {
+            System.out.printf(message);
+            if (userInput.hasNextInt()) {
+                integerChoix = userInput.nextInt();
+                reponseValide = listChoix.contains(integerChoix);
+                if (!reponseValide) {
+                    System.err.println(errorMessage);
+                } else if (integerChoix == 1) {
+                    boolChoix = false;
+                } else {
+                    boolChoix = true;
+                }
+            } else {
+                System.err.println(errorMessage);
+                userInput.next(); // Ignorer l'entrée non valide
+            }
+        } while (!reponseValide);
+        return boolChoix;
+    }
+        
+    /**
+     * Permet de réviser les mathématiques en jouant à un jeu spécifique (Quizz ou Ballon d'or).
+     * @param operateur L'opérateur choisi (1 pour addition, 2 pour soustraction, 3 pour multiplication, 4 pour division)
+     * @param jeu Le type de jeu choisi (1 pour Quizz, 2 pour Ballon d'or)
+     */
+    public static void reviserMath(int operateur, int jeu) {
+        System.out.printf("Révisons les Mathématiques !%n"); // DEBUG
+        if (jeu == 1) {
+            jouerQuizz(operateur);
+        } else {        
+            jouerBallonOr(operateur);
+        }
+    }
+    
+    /**
+     * Génère une opération mathématique aléatoire en fonction de l'opérateur spécifié.
+     * Affiche la question et retourne la réponse correcte.
+     * @param operateur L'opérateur choisi (1 pour addition, 2 pour soustraction, 3 pour multiplication, 4 pour division)
+     * @return La réponse correcte à l'opération générée
+     */
+    public static int genererOperation(int operateur) {
+        String question = "Combien font ";
+        int randomNumberA;
+        int randomNumberB;
+        int reponseCorrecte = 0;
+    
+        randomNumberA = random.nextInt(11);
+        randomNumberB  = random.nextInt(11);
+        switch (operateur) {
+            case 1: // Addition
+                question += randomNumberA +" + "+ randomNumberB +" =";
+                reponseCorrecte = randomNumberA + randomNumberB;
+                break;
+            case 2: // Soustraction
+                if (randomNumberA >= randomNumberB) {
+                    question += randomNumberA +" - "+ randomNumberB +" =";
+                    reponseCorrecte = randomNumberA - randomNumberB;
+                } else {
+                    question += randomNumberB +" - "+ randomNumberA +" =";
+                    reponseCorrecte = randomNumberB - randomNumberA;
+                }
+                break;
+            case 3: // Multiplication
+                question += randomNumberA +" x "+ randomNumberB +" =";
+                reponseCorrecte = randomNumberA * randomNumberB;
+                break;
+            case 4: // Division
+                randomNumberA = verifierDivZero(randomNumberA);
+                randomNumberB = verifierDivZero(randomNumberB);
+                if (randomNumberA >= randomNumberB) {
+                    question += randomNumberA +" : "+ randomNumberB +" =";
+                    reponseCorrecte = randomNumberA / randomNumberB;
+                } else {
+                    question += randomNumberB +" : "+ randomNumberA +" =";
+                    reponseCorrecte = randomNumberB / randomNumberA;
+                }
+                break;
+        }
+        System.out.printf(question); // DEBUG
+        return reponseCorrecte;
+    }
+    
+    /**
+     * Joue au jeu du Quizz.
+     * Pose une série de questions à l'utilisateur et vérifie les réponses.
+     * Affiche le nombre de réponses correctes.
+     * @param operateur L'opérateur choisi (1 pour addition, 2 pour soustraction, 3 pour multiplication, 4 pour division)
+     */
+    public static void jouerQuizz(int operateur) {        
+        int nbrQuestions = 10;
+        int reponseCorrecte;
+        int reponse;
+        int nbrReponseCorrecte = 0;
+        
+        System.out.printf("Quizz !%n"); // DEBUG
+        for (int i = 1; i <= nbrQuestions; i++) {
+            reponseCorrecte = genererOperation(operateur);
+            reponse = validerInt("%n");
+            if (reponse == reponseCorrecte) {
+                System.out.printf("Bien joué !%n");
+                nbrReponseCorrecte += 1;
+            } else {
+                System.out.printf("Domage, la bonne réponse était : %d%n", reponseCorrecte);
+            }
+        }
+        System.out.printf("Tu as répondu correctement à %d questions.%nEst-ce ton meilleur score ?%n%n", nbrReponseCorrecte);
+    }
+    
+    /**
+     * Joue au jeu du Ballon d'or.
+     * Pose des questions à l'utilisateur jusqu'à ce qu'il se trompe.
+     * Affiche le nombre de réponses correctes.
+     * @param operateur L'opérateur choisi (1 pour addition, 2 pour soustraction, 3 pour multiplication, 4 pour division)
+     */
+    public static void jouerBallonOr(int operateur) {
+        int reponseCorrecte;
+        int reponse;
+        int nbrReponseCorrecte = 0;
+        boolean continuer = true;
+        
+        System.out.printf("Ballon d'or !%n"); // DEBUG
+        do {
+            reponseCorrecte = genererOperation(operateur);
+            reponse = validerInt("%n");
+            if (reponse == reponseCorrecte) {
+                System.out.printf("Bien joué !%n");
+                nbrReponseCorrecte += 1;
+                continuer = true;
+            } else {
+                System.out.printf("Domage, la bonne réponse était : %d%n", reponseCorrecte);
+                continuer = false;
+            }
+        } while (continuer);
+        
+        System.out.printf("Tu as répondu correctement à %d questions.%nEst-ce ton meilleur score ?%n%n", nbrReponseCorrecte);
+    }
+    
+    /**
+     * Permet de choisir le type de jeu à jouer (Quizz ou Ballon d'or).
+     * @return Le type de jeu choisi (1 pour Quizz, 2 pour Ballon d'or)
+     */
+    public static int typeJeu() {
+        String textMessage = "" +
+            "Comment veux-tu jouer ?%n" +
+            "1 - Quizz de 10 questions%n" +    
+            "2 - Ballon d'or%n";
+        int jeu = validerChoix(textMessage, listeChoix2);
+        return jeu;
+    }
+    
+    /**
+     * Affiche le menu de choix principal et récupère le choix de l'utilisateur.
+     * @param prenom Le prénom de l'utilisateur
+     * @return Le choix de l'utilisateur (1 pour calculs, 2 pour afficher les tables)
+     */
+    public static int menuChoix(String prenom) {        
+        int resultChoix;
+        String textChoix = ""+ 
+            "Que veux-tu faire "+ 
+            prenom+ 
+            " ?%n"+ 
+            "1 - calcul mental%n"+ 
+            "2 - afficher les tables%n";
+
+        resultChoix = validerChoix(textChoix, listeChoix2);
+        return resultChoix;
+    }
+    
+    /**
+     * Permet de choisir l'opérateur à réviser.
+     * @return L'opérateur choisi (1 pour addition, 2 pour soustraction, 3 pour multiplication, 4 pour division)
+     */
+    public static int choixOperateur() {
+        String textChoix = ""+
+                "Que veux-tu réviser ?%n"+ 
+                "1- l'addition%n"+ 
+                "2- la soustraction%n"+ 
+                "3- la multiplication%n"+ 
+                "4- la division%n";
+        int operateur = validerChoix(textChoix, listeChoixOperateurs);
+        return operateur;
+    }
+    
+    /**
+     * Affiche les tables d'addition, soustraction, multiplication et division.
+     */
+    public static void afficherTables() {
+        int nombreMax = 10; // Nombre maximum dans les tables
+
+        System.out.println("*** Table d'addition ***");
+        // Affichage de la première cellule avec le symbole "+"
+        System.out.print("+\t| ");
+        // Affichage des nombres de 0 à nombreMax dans l'en-tête du tableau
+        for (int i = 0; i <= nombreMax; i++) {
+            System.out.print(i + "\t");
+        }
+        System.out.println();
+        // Affichage du trait horizontal
+        for (int i = 0; i <= nombreMax; i++) {
+            System.out.print("________");
+        }
+        System.out.println();
+
+        // Affichage des lignes du tableau
+        for (int i = 0; i <= nombreMax; i++) {
+            System.out.print(i + "\t| ");
+            for (int j = 0; j <= nombreMax; j++) {
+                int resultat = i + j;
+                System.out.print(resultat + "\t");
+            }
+            System.out.println();
+        }
+        System.out.println();
+
+        System.out.println("*** Table de soustraction ***");
+        // Affichage de la première cellule avec le symbole "-"
+        System.out.print("-\t| ");
+        // Affichage des nombres de nombreMax à 0 dans l'en-tête du tableau
+        for (int i = nombreMax; i >= 0; i--) {
+            System.out.print(i + "\t");
+        }
+        System.out.println();
+        // Affichage du trait horizontal
+        for (int i = 0; i <= nombreMax; i++) {
+            System.out.print("________");
+        }
+        System.out.println();
+
+        // Affichage des lignes du tableau
+        for (int i = 0; i <= nombreMax; i++) {
+            System.out.print(i + "\t| ");
+            for (int j = nombreMax; j >= 0; j--) {
+                int resultat = j - i;
+                System.out.print(resultat + "\t");
+            }
+            System.out.println();
+        }
+        System.out.println();
+
+        System.out.println("*** Table de multiplication ***");
+        // Affichage de la première cellule avec le symbole "x"
+        System.out.print("x\t| ");
+        // Affichage des nombres de 0 à nombreMax dans l'en-tête du tableau
+        for (int i = 0; i <= nombreMax; i++) {
+            System.out.print(i + "\t");
+        }
+        System.out.println();
+        // Affichage du trait horizontal
+        for (int i = 0; i <= nombreMax; i++) {
+            System.out.print("________");
+        }
+        System.out.println();
+
+        // Affichage des lignes du tableau
+        for (int i = 0; i <= nombreMax; i++) {
+            System.out.print(i + "\t| ");
+            for (int j = 0; j <= nombreMax; j++) {
+                int resultat = i * j;
+                System.out.print(resultat + "\t");
+            }
+            System.out.println();
+        }
+        System.out.println();
+
+        System.out.println("*** Table de division ***");
+        // Affichage de la première cellule avec le symbole "/"
+        System.out.print("/\t| ");
+        // Affichage des nombres de nombreMax à 0 dans l'en-tête du tableau
+        for (int i = nombreMax; i >= 0; i--) {
+            System.out.print(i + "\t");
+        }
+        System.out.println();
+        // Affichage du trait horizontal
+        for (int i = 0; i <= nombreMax; i++) {
+            System.out.print("________");
+        }
+        System.out.println();
+
+        // Affichage des lignes du tableau
+        for (int i = 1; i <= nombreMax; i++) {
+            System.out.print(i + "\t| ");
+            for (int j = nombreMax; j >= 0; j--) {
+                int resultat = j / i;
+                System.out.print(resultat + "\t");
+            }
+            System.out.println();
+        }
+        System.out.println();
+    }    
+    
+    /**
+     * Demande à l'utilisateur s'il souhaite rejouer.
+     * @return true s'il souhaite rejouer, false s'il souhaite quitter le programme
+     */
+    public static boolean choixRejouer() {
+        String messageQuitter = ""+
+            "%nVeux-tu rejouer ?%n"+
+            "1 - retour au menu principal%n"+
+            "2 - quitter Leni :(%n";
+        boolean quitter = validerBoolChoix(messageQuitter, listeChoix2);
+        return quitter;
+    }
+
+    /**
+     * Fonction principale du programme.
+     * @param args Les arguments de ligne de commande (non utilisés dans ce programme)
+     */
+    public static void main(String[] args) {
+        String prenom;
+        int choix;
+        int operateur;
+        boolean quitter = true;
+        int jeu;
+        
+        System.out.printf(
+                "Bonjour, je m'appelle Leni.%n"+
+                "Quel est ton prénom ?%n"
+        );
+        prenom = userInput.nextLine();
+        
+        do {
+            choix = menuChoix(prenom); // Calculs ou voir tables
+            if (choix == 1) {// Calculs
+                operateur = choixOperateur();// 1 pour addition, 2 pour soustraction, 3 pour multiplication, 4 pour division
+                jeu = typeJeu();// 1 pour Quizz, 2 pour Ballon d'or
+                reviserMath(operateur, jeu);
+            } else if (choix == 2) {// Voir tables
+                afficherTables();
+            }
+            
+            quitter = choixRejouer();
+        } while (!quitter);
+            
+        // FIN
+        userInput.close();
+        System.out.printf("Bye %s à bientôt !", prenom);
+    }
+}
